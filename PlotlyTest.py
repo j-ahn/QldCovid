@@ -44,7 +44,7 @@ def exponential(t, a, b, c):
 def doubling(t):
     return (1+np.log(2)/2)**t
 
-def plotCases(dataframe, column, countries, start_date, curvefit):
+def plotCases(dataframe, column, countries, start_date, curvefit, forecast):
 
     #fig = go.Figure()
     fig = make_subplots(rows=1,cols=2,subplot_titles=('Total Cases','New Cases'))
@@ -52,17 +52,6 @@ def plotCases(dataframe, column, countries, start_date, curvefit):
     fig.update_layout(title='Queensland Covid-19 Dashboard',title_font_size=30,title_x=0.5)     
     fig.update_layout(legend={'title':'Legend','bordercolor':'black','borderwidth':1})
     fig.update_layout(legend_title_font=dict(family="Arial, Tahoma, Helvetica",size=16,color="#404040"))
-    # fig.update_layout( annotations=[
-    #         go.layout.Annotation(
-    #             x=0,
-    #             y=0.0,
-    #             showarrow=False,
-    #             text="The chart on the left shows total covid-19 cases in<br>QLD in 2021.Both logistic and exponential regression<br>has been used to model the potential trajectories of<br>growth. The chart on the right shows new daily cases<br>vs. total cases in 2021. This plot, with log-log axes,<br>represents exponential growth as a straight line.",
-    #             align = 'left',
-    #             xref="x",
-    #             yref="y",
-    #             bordercolor='black',
-    #             borderwidth=1),])
     fig.update_layout(
         font=dict(
             family="Arial, Tahoma, Helvetica",
@@ -102,9 +91,9 @@ def plotCases(dataframe, column, countries, start_date, curvefit):
         x = np.arange(y.size)
         date = co['date']
         
-        x2 = np.arange(y.size+14)
+        x2 = np.arange(y.size+forecast)
         
-        date2 = pd.date_range(date[0],freq='1d',periods=len(date)+14)
+        date2 = pd.date_range(date[0],freq='1d',periods=len(date)+forecast)
         
         fig.add_trace(go.Scatter(x=date,y=y,mode='markers',name='Confirmed Cases',marker_color='rgba(27,38,100,.8)'),row=1,col=1)
 
@@ -124,11 +113,11 @@ def plotCases(dataframe, column, countries, start_date, curvefit):
         
         #if logisticr2 > 0.95:
         fig.add_trace(go.Scatter(x=date2,y=logistic(x2, *lpopt), mode='lines', name="Logistic (r2={0}) Doubling Time = {1}±{2} days".format(round(logisticr2,2),round(ldoubletime,2),round(ldoubletimeerror,2)),line_color='rgba(245,130,100,.8)',line_shape='spline',line_dash='dash'),row=1,col=1)
-        # Logistic regression -----------------------------------------------------------------------
+        # -----------------------------------------------------------------------
         
         
         # Exponential regression--------------------------------------------------------------------
-        epopt, epcov = curve_fit(exponential, x, y, bounds=([0,0,-100],[100,0.9,100]), maxfev=10000)
+        epopt, epcov = curve_fit(exponential, x, y, bounds=([0.99,0,-100],[1.01,0.9,100]), maxfev=10000)
         eerror = np.sqrt(np.diag(epcov))
         
         # for exponential curve, slope = growth rate. so doubling time = ln(2) / growth rate
@@ -144,13 +133,12 @@ def plotCases(dataframe, column, countries, start_date, curvefit):
         
         #if expr2 > 0.95:
         fig.add_trace(go.Scatter(x=date2,y=exponential(x2, *epopt), mode='lines', name="Exponential (r2={0}) Doubling Time = {1}±{2} days".format(round(expr2,2),round(edoubletime,2),round(edoubletimeerror,2)),line_color='rgba(134,200,230,.8)',line_shape='spline',line_dash='dash'),row=1,col=1)
-        # Exponential regression--------------------------------------------------------------------
+        # --------------------------------------------------------------------
 
         # Calculations for new cases
         delta = np.diff(co['Cases'])
         fig.add_trace(go.Scatter(x=y[1:],y=delta,mode='lines',name='New Daily Cases',line_color='rgba(210,210,185,.8)'),row=1,col=2)
         
-        print(x2)
         dbl_cases = 2**(x2/2)
         dbl_delta = 0.5*np.log(2)*np.exp((np.log(2)*x2)/2)
         fig.add_trace(go.Scatter(x=dbl_cases,y=dbl_delta,mode='lines',name='2 Day Doubling Time',line = {'color':'black','dash':'dash'}),row=1,col=2)
@@ -167,7 +155,7 @@ def plotCases(dataframe, column, countries, start_date, curvefit):
 # plotCases(dataframe, column, countries, days since)
 #AusStates = ['New South Wales','Victoria','Queensland','Western Australia','South Australia', 'Tasmania', 'Australian Capital Territory']
 AusStates = ['Queensland']
-fig = plotCases(df, 'Province/State', AusStates, '2021-01-02', True)
+fig = plotCases(df, 'Province/State', AusStates, '2021-01-01', True, 3)
 #py.plot(fig, filename = 'AusCovid-19', auto_open=True)
 
 pio.write_html(fig,file='index.html',auto_open=True)
