@@ -52,19 +52,18 @@ def plotCases(dataframe, column, countries, start_date, curvefit):
     fig.update_layout(title='Queensland Covid-19 Dashboard',title_font_size=30,title_x=0.5)     
     fig.update_layout(legend={'title':'Legend','bordercolor':'black','borderwidth':1})
     fig.update_layout(legend_title_font=dict(family="Arial, Tahoma, Helvetica",size=16,color="#404040"))
-    fig.update_layout( annotations=[
-            go.layout.Annotation(
-                x=1.17,
-                y=0.0,
-                showarrow=False,
-                text="The chart on the left shows total covid-19 cases in<br>QLD in 2021.Both logistic and exponential regression<br>has been used to model the potential trajectories of<br>growth. The chart on the right shows new daily cases<br>vs. total cases in 2021. This plot, with log-log axes,<br>represents exponential growth as a straight line.",
-                align = 'left',
-                xref="paper",
-                yref="paper",
-                bordercolor='black',
-                borderwidth=1
-            ),
-        ],
+    # fig.update_layout( annotations=[
+    #         go.layout.Annotation(
+    #             x=0,
+    #             y=0.0,
+    #             showarrow=False,
+    #             text="The chart on the left shows total covid-19 cases in<br>QLD in 2021.Both logistic and exponential regression<br>has been used to model the potential trajectories of<br>growth. The chart on the right shows new daily cases<br>vs. total cases in 2021. This plot, with log-log axes,<br>represents exponential growth as a straight line.",
+    #             align = 'left',
+    #             xref="x",
+    #             yref="y",
+    #             bordercolor='black',
+    #             borderwidth=1),])
+    fig.update_layout(
         font=dict(
             family="Arial, Tahoma, Helvetica",
             size=14,
@@ -161,8 +160,6 @@ def plotCases(dataframe, column, countries, start_date, curvefit):
         
         fig.update_xaxes(title_text='Total confirmed cases since {0}'.format(start_date),range=[0,np.log10(max(y)+100)],type="log",row=1,col=2)
         fig.update_yaxes(title_text='New daily cases',type="log",range=[0,np.log10(max(delta)+100)],row=1,col=2)
-        
-        
         
     return fig
     
