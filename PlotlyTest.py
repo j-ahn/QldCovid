@@ -92,6 +92,7 @@ def plotCases(dataframe, column, countries, start_date, curvefit, forecast):
         date = co['date']
         
         x2 = np.arange(y.size+forecast)
+        x3 = np.arange(y.size+forecast+100)
         
         date2 = pd.date_range(date[0],freq='1d',periods=len(date)+forecast)
         
@@ -139,8 +140,8 @@ def plotCases(dataframe, column, countries, start_date, curvefit, forecast):
         delta = np.diff(co['Cases'])
         fig.add_trace(go.Scatter(x=y[1:],y=delta,mode='lines',name='New Daily Cases',line_color='rgba(210,210,185,.8)'),row=1,col=2)
         
-        dbl_cases = 2**(x2/2)
-        dbl_delta = 0.5*np.log(2)*np.exp((np.log(2)*x2)/2)
+        dbl_cases = 2**(x3/2)
+        dbl_delta = 0.5*np.log(2)*np.exp((np.log(2)*x3)/2)
         fig.add_trace(go.Scatter(x=dbl_cases,y=dbl_delta,mode='lines',name='2 Day Doubling Time',line = {'color':'black','dash':'dash'}),row=1,col=2)
         
         fig.update_xaxes(title_text='Date',row=1,col=1)
