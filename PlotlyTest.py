@@ -25,11 +25,6 @@ from plotly.offline import download_plotlyjs, init_notebook_mode,  plot
 import plotly.io as pio
 from plotly.subplots import make_subplots
 
-# Plotly credentials
-username = 'j-ahn'
-api_key = 'eoNF8mZbtyci47iTLmaq'
-chart_studio.tools.set_credentials_file(username=username,api_key=api_key)
-
 # Pull data from John Hopkins University and organise into dataframe 
 df = pd.read_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
 
